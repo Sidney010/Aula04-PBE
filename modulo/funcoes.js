@@ -11,6 +11,7 @@ const MESSAGE_ERROR = {status: false, statuscode: 500, development: 'Sidney Camp
 
 //Retorna a lista de estados
 const getAllEstados = function(){
+    //Padrão do JSON que será o retorno
     let message = {status: true, statuscode: 200, development: 'Sidney Campos Aragão', uf: []}
     
     dados.listaDeEstados.estados.forEach(function(item){
@@ -32,34 +33,109 @@ const getAllEstados = function(){
 
 //Retorna dados do estado filtrando pela sigla
 const getEstadoBySigla = function(sigla){
-    let siglaEstado = sigla
-
-
+    let filtroSiglaEstado = sigla
+    let message = {status: true, statuscode: 200, development: 'Sidney Campos Aragão'}
+    let listaEstados = dados.listaDeEstados.estados.find(estado => estado.sigla === filtroSiglaEstado)
+    
+    if(listaEstados){
+        message.uf = listaEstados.sigla
+        message.descricao = listaEstados.nome
+        message.capital = listaEstados.capital
+        message.regiao = listaEstados.regiao
+        return message //Resulatdo Verdadeiro da API 200 
+    } else {
+        return MESSAGE_ERROR //Resultedo Falso da API 500
+    }
+    
 
 
 }
 
 //Retorna a capital do estado filtrando pela sigla
 const getCapitalBySigla = function(sigla){
+    let filtroSiglaEstado = sigla
+    let message = {status: true, statuscode: 200, development: 'Sidney Campos Aragão'}
+    let listaEstados = dados.listaDeEstados.estados.find(estado => estado.sigla === filtroSiglaEstado)
+
+    if(listaEstados){
+        message.uf = listaEstados.sigla
+        message.descricao = listaEstados.nome
+        message.capital = listaEstados.capital
+        return message //Resulatdo Verdadeiro da API 200 
+    } else {
+        return MESSAGE_ERROR //Resultedo Falso da API 500
+    }
 
 }
 
 //Retorna a lista de estados filtrando pela região
 const getEstadosByRegiao = function(regiao){
+    let filtroRegiao = regiao
+    let message = {status: true, statuscode: 200, development: 'Sidney Campos Aragão', regiao: '', estados: []}
+    dados.listaDeEstados.estados.forEach(estado => {
+        if(filtroRegiao === estado.regiao){
+            let uf = estado.sigla
+            let descricao = estado.nome
+            let estadoRegiao = {uf, descricao}
+            message.estados.push(estadoRegiao)
+        } else {
+            return MESSAGE_ERROR
+        }
+    })
+    return message
 
 }
 
 //Retorna a lista de estados que foram a capital de um país filtrando pelo país
-const getEstadosIsCapitalByCountry = function(pais){
+const getEstadosIsCapitalByCountry = function(){
+
+    let message = {status: true, statuscode: 200, development: 'Sidney Campos Aragão', capitais: []}
+    dados.listaDeEstados.estados.forEach(function(estado){
+        if(estado.capital_pais){
+            let capital_atual = estado.capital_pais.capital  
+            let uf = estado.sigla
+            let descricao = estado.nome
+            let capital = estado.capital
+            let regiao = estado.regiao
+            let capital_pais_ano_inicio = estado.capital_pais.ano_inicio
+            let capital_pais_ano_termino = estado.capital_pais.ano_fim
+            let estadoCapitalbyCountry = {capital_atual, uf, descricao, capital, regiao, capital_pais_ano_inicio, capital_pais_ano_termino}
+            message.capitais.push(estadoCapitalbyCountry)
+            return message
+        } else{
+            return MESSAGE_ERROR
+        }
+    })
+
 
 
 }
 
 //Retorna as cidades existente em um estado, filtrando pela sigla
 const getCidadesBySigla = function(sigla){
+    let filtroSiglaEstado = sigla
+    let message = {status: true, statuscode: 200, development: 'Sidney Campos Aragão', uf: '', descricao: '', quantidade_cidades: '', cidades: []}
+    let listaEstados = dados.listaDeEstados.estados.find(estado => estado.sigla === filtroSiglaEstado)
+    if(listaEstados){
+        message.uf = listaEstados.sigla
+        message.descricao = listaEstados.nome
+        dados.listaDeEstados.estados.forEach(cidade => {
+            message.cidades.push(cidade.nome)
+        })
+        message.quantidade_cidades = message.cidades.length
+    }
+
 
 }
 
 module.exports = {
-    getAllEstados
+    getAllEstados,
+    getEstadoBySigla,
+    getCapitalBySigla
 }
+
+// console.log(getAllEstados())
+// console.log(getEstadoBySigla('SP'))
+// console.log(getCapitalBySigla('AC'))
+// console.log(getEstadosByRegiao('Sudeste'))
+// console.log(getEstadosIsCapitalByCountry())

@@ -10,26 +10,53 @@
  *      body-parser -> npm install body-parser  --save Instala as dependênciais para receber os tipos de daados via POST ou PUT
  *********************************************************************************************************************************/
 
-//Import das dependências
+// Import das dependências
 const express       = require('express')
 const cors          = require('cors')
 const bodyParser    = require('body-parser')
 
-//Define a porta padrão da API, se for em um servidor de nuvem não temos acesso a porta
-            //em execução local podemos definir uma porta livre
+// Import do arquivo de funções
+const dados         = require('./modulo/funcoes.js')
+
+// Define a porta padrão da API, se for em um servidor de nuvem não temos acesso a porta
+            // em execução local podemos definir uma porta livre
 const PORT          = process.PORT || 8080
 
-//Instância na class do express
+// Instância na class do express
 const app = express()
 
+// Configurações do CORS
 app.use((request, response, next)=>{
-    response.header('Access-Control-Allow-Origin','*')
-    response.header('Access-Control-Allow-Methods','GET')
+    response.header('Access-Control-Allow-Origin','*')      // IP de origem
+    response.header('Access-Control-Allow-Methods','GET')   // Metodos (Verbos) do protocolo HTTP
 
     app.use(cors())
-    next()
+    next()                                                  //Próximo, ler tudo
 })
 
+//Request   -> Recebe os dados da API
+//Response  -> Envia os dados na API
+
+// EndPoint 
+        // Listar todos os estados
 app.get('/v1/estados', function(request, response){
-    
+    let estados = dados.getAllEstados()
+    response.status(estados.statuscode)
+    response.json(estados)
+})
+        // Envia os dados do estado por sigla
+app.get('/v1/estado/:uf', function(request, response){
+    let sigla           = request.params.uf 
+
+    console.log(sigla)
+})
+        // Envia os estados conforme a região
+app.get('/v1/regiao/:regiao', function(request, response){
+    let regiaoEstados   = request.query.regiao
+    let sigla           = request.query.uf
+    let id              = request.params.id
+})
+//Start da API
+app.listen(PORT, function(){
+    console.log('API aguardando requisições ....')
 })
