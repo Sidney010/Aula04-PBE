@@ -56,7 +56,6 @@ const getCapitalBySigla = function(sigla){
     let filtroSiglaEstado = sigla
     let message = {status: true, statuscode: 200, development: 'Sidney Campos Aragão'}
     let listaEstados = dados.listaDeEstados.estados.find(estado => estado.sigla === filtroSiglaEstado)
-
     if(listaEstados){
         message.uf = listaEstados.sigla
         message.descricao = listaEstados.nome
@@ -74,15 +73,18 @@ const getEstadosByRegiao = function(regiao){
     let message = {status: true, statuscode: 200, development: 'Sidney Campos Aragão', regiao: '', estados: []}
     dados.listaDeEstados.estados.forEach(estado => {
         if(filtroRegiao === estado.regiao){
+            message.regiao = estado.regiao
             let uf = estado.sigla
             let descricao = estado.nome
             let estadoRegiao = {uf, descricao}
             message.estados.push(estadoRegiao)
-        } else {
-            return MESSAGE_ERROR
         }
     })
-    return message
+    if(!(message.estados.length === 0)|| !(message.regiao === "")){
+        return message
+    } else {''
+        return MESSAGE_ERROR
+    }
 
 }
 
@@ -101,12 +103,13 @@ const getEstadosIsCapitalByCountry = function(){
             let capital_pais_ano_termino = estado.capital_pais.ano_fim
             let estadoCapitalbyCountry = {capital_atual, uf, descricao, capital, regiao, capital_pais_ano_inicio, capital_pais_ano_termino}
             message.capitais.push(estadoCapitalbyCountry)
-            return message
-        } else{
-            return MESSAGE_ERROR
         }
     })
-
+    if(!(message.capitais.length === 0)){
+        return message
+    } else {
+        return MESSAGE_ERROR
+    }
 
 
 }
@@ -115,23 +118,33 @@ const getEstadosIsCapitalByCountry = function(){
 const getCidadesBySigla = function(sigla){
     let filtroSiglaEstado = sigla
     let message = {status: true, statuscode: 200, development: 'Sidney Campos Aragão', uf: '', descricao: '', quantidade_cidades: '', cidades: []}
-    let listaEstados = dados.listaDeEstados.estados.find(estado => estado.sigla === filtroSiglaEstado)
-    if(listaEstados){
-        message.uf = listaEstados.sigla
-        message.descricao = listaEstados.nome
-        dados.listaDeEstados.estados.forEach(cidade => {
-            message.cidades.push(cidade.nome)
-        })
-        message.quantidade_cidades = message.cidades.length
-    }
+    dados.listaDeEstados.estados.forEach(function(estado) {
+        if(estado.sigla === filtroSiglaEstado){
+            message.uf = estado.sigla
+            message.descricao = estado.nome
+            message.quantidade_cidades = estado.cidades.length
+            
+            estado.cidades.forEach(function(cidade){
+                message.cidades.push(cidade.nome)
+            })
 
+        }
+    })
+    if (!(message.uf === '') || !(message.descricao === '') || !(message.quantidade_cidades === '')){
+        return message
+    } else {
+        return MESSAGE_ERROR
+    }
 
 }
 
 module.exports = {
     getAllEstados,
     getEstadoBySigla,
-    getCapitalBySigla
+    getCapitalBySigla,
+    getEstadosByRegiao,
+    getEstadosIsCapitalByCountry,
+    getCidadesBySigla
 }
 
 // console.log(getAllEstados())
@@ -139,3 +152,4 @@ module.exports = {
 // console.log(getCapitalBySigla('AC'))
 // console.log(getEstadosByRegiao('Sudeste'))
 // console.log(getEstadosIsCapitalByCountry())
+// console.log(getCidadesBySigla('AC'))
